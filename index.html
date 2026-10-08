@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GOBA — Stay Original | سويت شيرت أبيض بخطوط سودا</title>
+<meta name="description" content="GOBA Stay Original — سويت شيرت أبيض بخطوط سودا، ياقة بسوستة. عارض 360، مقاسات، وطلب واتساب.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2307070a'/%3E%3Ctext x='16' y='22' font-size='18' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'%3EG%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07070a; --bg2:#0e0e13; --card:#121218; --fg:#f4f1ec; --mut:#a7a39b;
+  --line:rgba(244,241,236,.12); --acc:#fff; --gold:#d8c49a;
+  --r:18px; --max:1120px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:'Cairo',sans-serif;overflow-x:hidden}
+canvas#gl{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
+.vig{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at center,transparent 42%,rgba(0,0,0,.78) 100%)}
+.bar{position:fixed;top:0;right:0;height:3px;width:0;background:linear-gradient(90deg,var(--gold),#fff);z-index:60}
+/* nav */
+nav{position:fixed;top:0;right:0;left:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
+  padding:14px 5vw;background:linear-gradient(rgba(7,7,10,.85),rgba(7,7,10,0));backdrop-filter:blur(8px)}
+.logo{font-family:'Oswald';letter-spacing:.35em;font-weight:700;font-size:20px}
+.logo small{display:block;font-family:'Cairo';letter-spacing:.2em;font-size:10px;color:var(--mut);font-weight:400}
+.links{display:flex;gap:22px;font-size:14px;color:var(--mut)}
+.links a{color:var(--mut);text-decoration:none}
+.links a:hover{color:#fff}
+.cta{background:#fff;color:#000;border:0;border-radius:999px;padding:10px 22px;font-weight:800;font-family:'Cairo';cursor:pointer;text-decoration:none;font-size:14px}
+@media(max-width:760px){.links{display:none}}
+/* layout */
+main{position:relative;z-index:2;overflow-x:clip}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 6vw;width:100%;min-width:0}
+.sec{min-height:100vh;display:flex;align-items:center;padding:90px 0}
+.sec.center{justify-content:center;text-align:center}
+.box{max-width:460px;width:100%;min-width:0;opacity:0;transform:translateY(36px);transition:1s cubic-bezier(.2,.7,.2,1)}
+img{max-width:100%}
+.on .box, .box.on{opacity:1;transform:none}
+.tag{font-family:'Oswald';letter-spacing:.35em;color:var(--gold);font-size:12px;margin-bottom:12px}
+h1{font-family:'Oswald';font-size:clamp(70px,15vw,160px);line-height:.9;margin:0;letter-spacing:.1em}
+h2{font-size:clamp(28px,5vw,46px);margin:0 0 12px;font-weight:900;line-height:1.35}
+p{color:var(--mut);font-size:17px;line-height:2;margin:0}
+.sub{font-family:'Oswald';letter-spacing:.5em;font-size:clamp(13px,2.4vw,20px);margin-top:14px;color:var(--fg)}
+.hint{margin-top:30px;font-size:14px;color:var(--mut);animation:b 1.8s infinite}
+@keyframes b{50%{transform:translateY(8px)}}
+.hero-badges{display:flex;gap:10px;justify-content:center;margin-top:26px;flex-wrap:wrap}
+.pill{border:1px solid var(--line);border-radius:999px;padding:8px 16px;font-size:13px;color:var(--fg);background:rgba(255,255,255,.04)}
+/* 360 viewer */
+.viewer{background:rgba(18,18,24,.82);border:1px solid var(--line);border-radius:24px;overflow:hidden;backdrop-filter:blur(10px)}
+.viewer-main{position:relative;background:#e9e5dc;aspect-ratio:4/4.4;touch-action:pan-y;cursor:grab;user-select:none}
+.viewer-main img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.drag-hint{position:absolute;bottom:12px;right:50%;transform:translateX(50%);background:rgba(0,0,0,.65);color:#fff;
+  font-size:12px;padding:8px 16px;border-radius:999px;pointer-events:none}
+.viewer-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;gap:12px;flex-wrap:wrap}
+.vbtns{display:flex;gap:8px}
+.ibtn{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:transparent;color:#fff;font-size:18px;cursor:pointer}
+.ibtn:hover{background:#fff;color:#000}
+.dots{display:flex;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25);cursor:pointer;border:0;padding:0}
+.dot.act{background:var(--gold);width:26px;border-radius:99px}
+.vlabel{font-size:13px;color:var(--mut)}
+/* cards grid */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:28px}
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+.feat{background:rgba(18,18,24,.85);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.feat img{width:100%;height:190px;object-fit:cover;border-radius:12px;margin-bottom:14px}
+.feat h3{margin:0 0 8px;font-size:19px}
+.feat p{font-size:14.5px;line-height:1.9}
+/* order */
+.order{display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:start}
+@media(max-width:900px){.order{grid-template-columns:1fr}}
+.panel{background:rgba(16,16,22,.9);border:1px solid var(--line);border-radius:22px;padding:26px}
+.price{display:flex;align-items:baseline;gap:12px;margin:8px 0 4px}
+.price b{font-size:42px}
+.price s{color:var(--mut)}
+.off{background:#1d3a24;color:#7dffa9;border-radius:99px;padding:4px 12px;font-size:13px;font-weight:700}
+.sizes{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.size{border:1px solid var(--line);background:transparent;color:#fff;min-width:52px;padding:10px 0;border-radius:12px;cursor:pointer;font-weight:800}
+.size.act{background:#fff;color:#000}
+.qty{display:flex;align-items:center;gap:14px;margin:10px 0 6px}
+.qty button{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:transparent;color:#fff;font-size:20px;cursor:pointer}
+input,textarea{width:100%;background:#0b0b10;border:1px solid var(--line);border-radius:12px;color:#fff;padding:13px 14px;font-family:'Cairo';font-size:15px;margin-top:10px}
+.btn{display:inline-block;margin-top:16px;padding:16px 20px;border-radius:14px;border:0;font-weight:900;font-size:17px;cursor:pointer;text-decoration:none;text-align:center;width:100%}
+.btn.wa{background:#22c55e;color:#04120a}
+.btn.ghost{background:transparent;border:1.5px solid var(--fg);color:var(--fg);width:auto;padding:14px 36px}
+.btn.ghost:hover{background:#fff;color:#000}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:12px}
+th,td{border:1px solid var(--line);padding:10px;text-align:center}
+th{background:rgba(255,255,255,.06)}
+.note{font-size:13px;color:var(--mut);line-height:1.9;margin-top:12px}
+/* sticky */
+.sticky{position:fixed;bottom:12px;right:12px;left:12px;z-index:55;display:none;gap:10px;
+  background:rgba(12,12,16,.92);border:1px solid var(--line);border-radius:16px;padding:10px 12px;backdrop-filter:blur(10px);align-items:center}
+.sticky.show{display:flex}
+.sticky b{font-size:19px}
+.sticky span{font-size:12px;color:var(--mut);display:block}
+@media(min-width:861px){.sticky{display:none!important}}
+footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:34px 0 110px;color:var(--mut);font-size:13px}
+.row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+/* ===== threeui-inspired dance layer (original code) ===== */
+#ember{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.85}
+.aurora{position:fixed;border-radius:50%;filter:blur(90px);z-index:0;pointer-events:none;opacity:.5;mix-blend-mode:screen}
+.a1{width:46vw;height:46vw;left:-12vw;top:-10vw;background:radial-gradient(circle,#3b2f6b,transparent 70%);animation:fl1 11s ease-in-out infinite alternate}
+.a2{width:40vw;height:40vw;right:-10vw;top:30vh;background:radial-gradient(circle,#6b3b2f,transparent 70%);animation:fl2 13s ease-in-out infinite alternate}
+@keyframes fl1{to{transform:translate(6vw,8vh) scale(1.15)}}
+@keyframes fl2{to{transform:translate(-6vw,-6vh) scale(1.1)}}
+.grain{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:.08;mix-blend-mode:overlay;
+ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E")}
+#cursor{position:fixed;width:12px;height:12px;border-radius:50%;background:var(--gold);z-index:70;pointer-events:none;transform:translate(-50%,-50%);opacity:0;mix-blend-mode:difference}
+#halo{position:fixed;width:130px;height:130px;border-radius:50%;pointer-events:none;z-index:1;
+ background:radial-gradient(circle,rgba(216,196,154,.20),transparent 70%);transform:translate(-50%,-50%);opacity:0}
+@media(hover:none){#cursor,#halo{display:none}}
+.marquee{overflow:hidden;white-space:nowrap;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+ padding:13px 0;background:rgba(255,255,255,.025);position:relative;z-index:2}
+.mq-track{display:inline-flex;animation:mq 22s linear infinite;will-change:transform}
+.mq-track span{font-family:'Oswald';letter-spacing:.4em;padding:0 30px;font-size:14px;color:var(--gold);white-space:nowrap}
+@keyframes mq{to{transform:translateX(50%)}}
+.mag{transition:transform .25s cubic-bezier(.2,.7,.2,1),box-shadow .25s;will-change:transform;display:inline-block}
+a.mag:hover,.button.mag:hover{box-shadow:0 12px 44px rgba(216,196,154,.28)}
+.kin{overflow:hidden;display:block}
+#kinH{direction:ltr;unicode-bidi:isolate;letter-spacing:.1em}
+.kin>span{display:inline-block;opacity:0;transform:translateY(110%) rotate(5deg);animation:kup .9s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes kup{to{opacity:1;transform:none}}
+.tilt{transform-style:preserve-3d;transition:transform .18s ease-out;will-change:transform}
+.tst-row{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:8px 2px 16px;scrollbar-width:none;cursor:grab}
+.tst-row::-webkit-scrollbar{display:none}
+.tst{min-width:272px;max-width:300px;scroll-snap-align:start;background:rgba(18,18,24,.88);border:1px solid var(--line);
+ border-radius:18px;padding:20px;flex-shrink:0}
+.tst .stars{color:var(--gold);letter-spacing:.2em;font-size:13px}
+.tst b{display:block;margin:10px 0 4px}
+.tst p{font-size:14px;line-height:1.9}
+.qa{border:1px solid var(--line);border-radius:14px;margin-top:10px;overflow:hidden;background:rgba(16,16,22,.85)}
+.qa>button{width:100%;background:none;border:0;color:#fff;font-family:'Cairo';font-weight:700;font-size:15px;
+ padding:15px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.qa .a{max-height:0;overflow:hidden;transition:max-height .45s ease}
+.qa.open .a{max-height:260px}
+.qa .a p{padding:0 16px 16px;font-size:14px}
+.cf{position:fixed;width:8px;height:13px;z-index:80;pointer-events:none;border-radius:2px}
+.pulse{animation:pulse 2.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.035)}}
+/* ===== getlayers + originkit inspired (original code) ===== */
+.manifesto{font-size:clamp(24px,4.6vw,42px);font-weight:900;line-height:2;max-width:800px}
+.manifesto .w{color:rgba(244,241,236,.14);transition:color .3s}
+.manifesto .w.lit{color:var(--fg);text-shadow:0 0 24px rgba(216,196,154,.25)}
+.equator{display:flex;gap:14px;overflow-x:auto;padding:18px 2px 8px;scroll-snap-type:x mandatory;scrollbar-width:none;cursor:grab}
+.equator::-webkit-scrollbar{display:none}
+.eq-card{min-width:230px;scroll-snap-align:center;border-radius:18px;overflow:hidden;border:1px solid var(--line);
+ background:#e9e5dc;transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s;position:relative}
+.eq-card img{width:100%;height:280px;object-fit:cover;display:block}
+.eq-card b{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.65);color:#fff;font-size:12px;
+ padding:6px 12px;border-radius:99px}
+.eq-card.spot{transform:scale(1.04);box-shadow:0 18px 60px rgba(216,196,154,.25)}
+.reveal-list{border-top:1px solid var(--line);margin-top:16px}
+.reveal-row{display:flex;justify-content:space-between;align-items:center;padding:18px 6px;border-bottom:1px solid var(--line);
+ cursor:pointer;font-weight:800;font-size:19px;transition:padding .25s,color .25s}
+.reveal-row small{color:var(--mut);font-weight:400;font-size:13px}
+.reveal-row:hover{color:var(--gold);padding-right:14px}
+#floatImg{position:fixed;width:180px;height:220px;object-fit:cover;border-radius:14px;pointer-events:none;z-index:65;
+ opacity:0;transform:scale(.85) rotate(-4deg);transition:opacity .25s,transform .25s;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.orbit{position:relative;isolation:isolate}
+.orbit::before{content:"";position:absolute;inset:-2px;border-radius:16px;z-index:-1;
+ background:conic-gradient(from var(--oa,0deg),#d8c49a,#fff,#7fa8ff,#22c55e,#d8c49a);
+ animation:orbit 3.5s linear infinite}
+.orbit::after{content:"";position:absolute;inset:1px;border-radius:15px;background:#0a2e16;z-index:-1}
+@property --oa{syntax:"<angle>";initial-value:0deg;inherits:false}
+@keyframes orbit{to{--oa:360deg}}
+.starbtn{position:relative;overflow:hidden}
+.starbtn i{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;opacity:.8;animation:tw 1.8s ease-in-out infinite}
+@keyframes tw{50%{opacity:.1;transform:scale(.5)}}
+.shine{position:relative;overflow:hidden}
+.shine::after{content:"";position:absolute;top:0;bottom:0;width:45%;left:-70%;transform:skewX(-18deg);
+ background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);transition:left .1s}
+.shine:hover::after{left:130%;transition:left .8s ease}
+.neon{box-shadow:0 0 0 1px rgba(216,196,154,.35),0 0 24px rgba(216,196,154,.12),inset 0 0 18px rgba(216,196,154,.06)}
+/* ===== drop culture dance layer (original code) ===== */
+#loader{position:fixed;inset:0;z-index:100;background:#07070a;display:flex;flex-direction:column;gap:18px;
+ align-items:center;justify-content:center;transition:opacity .6s,visibility .6s}
+#loader.done{opacity:0;visibility:hidden}
+#loader .lg{font-family:'Oswald';font-size:52px;letter-spacing:.35em;display:flex;gap:6px}
+#loader .lg span{display:inline-block;animation:lup 1s ease-in-out infinite}
+#loader .lg span:nth-child(2){animation-delay:.1s}#loader .lg span:nth-child(3){animation-delay:.2s}
+#loader .lg span:nth-child(4){animation-delay:.3s}
+@keyframes lup{50%{transform:translateY(-12px);opacity:.6}}
+#loadBar{width:180px;height:2px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden}
+#loadBar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),#fff)}
+.drop-pill{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,90,90,.4);color:#ffb4b4;
+ border-radius:999px;padding:8px 18px;font-size:13px;font-weight:700;background:rgba(255,60,60,.07);margin-top:18px}
+.drop-pill b{color:#fff;font-variant-numeric:tabular-nums;letter-spacing:.05em}
+.beat{animation:beatp 1.6s ease-in-out infinite}
+@keyframes beatp{0%,100%{transform:scale(1)}12%{transform:scale(calc(1 + var(--beat,.04)))}}
+.stock{margin-top:12px;font-size:13px;color:var(--mut)}
+.stock .track{height:6px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:6px}
+.stock .fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#ff5a5a,var(--gold));transition:width .5s cubic-bezier(.2,.7,.2,1)}
+#toast{position:fixed;bottom:76px;right:14px;z-index:56;display:flex;gap:10px;align-items:center;
+ background:rgba(14,14,20,.94);border:1px solid var(--line);border-radius:14px;padding:10px 14px;font-size:13px;
+ transform:translateY(20px);opacity:0;transition:.45s cubic-bezier(.2,.7,.2,1);pointer-events:none;max-width:300px}
+#toast.show{transform:none;opacity:1}
+#toast .av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#6b5a3b);
+ display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;flex-shrink:0}
+#sidenav{position:fixed;left:14px;top:50%;transform:translateY(-50%);z-index:50;display:flex;flex-direction:column;gap:10px}
+#sidenav a{width:9px;height:9px;border-radius:99px;background:rgba(255,255,255,.25);transition:.3s}
+#sidenav a.act{background:var(--gold);height:28px}
+@media(max-width:900px){#sidenav{display:none}}
+.bump{animation:bump .35s cubic-bezier(.2,.7,.2,1)}
+@keyframes bump{30%{transform:scale(1.25) rotate(-3deg)}}
+@media(prefers-reduced-motion:reduce){.mq-track,.a1,.a2,.pulse,.hint{animation:none!important}}
+</style>
+</head>
+<body>
+<div id="loader"><div class="lg"><span>G</span><span>O</span><span>B</span><span>A</span></div><div id="loadBar"><i></i></div></div>
+<div class="bar" id="bar"></div>
+<canvas id="gl"></canvas><canvas id="ember"></canvas><div class="vig"></div>
+<div class="aurora a1"></div><div class="aurora a2"></div><div class="grain"></div>
+<div id="halo"></div><div id="cursor"></div>
+
+<nav>
+  <div class="logo">GOBA<small>STAY ORIGINAL</small></div>
+  <div class="links"><a href="#design">التصميم</a><a href="#view360">عارض 360</a><a href="#size">المقاسات</a><a href="#love">آراء</a><a href="#faq">أسئلة</a><a href="#order">اطلب</a></div>
+  <a class="cta mag" href="#order">اطلب دلوقتي — <span id="navPrice">850</span> ج</a>
+</nav>
+
+<main>
+<!-- HERO -->
+<section class="sec center on" id="hero"><div class="wrap"><div class="box on" style="max-width:none">
+  <div class="tag">NEW DROP — WHITE / BLACK</div>
+  <h1 class="kin beat" id="kinH">GOBA</h1><div class="sub">STAY ORIGINAL</div>
+  <div class="drop-pill">🔥 الدروب يقفل خلال <b id="count">--:--:--</b></div>
+  <p style="max-width:520px;margin:18px auto 0">سويت شيرت أبيض بخطوط سودا، ياقة عالية بسوستة. اسكرول لتحت وشوف كل زاوية قبل ما تطلب.</p>
+  <div class="hero-badges"><span class="pill">خامة تقيلة</span><span class="pill">تقفيل نضيف</span><span class="pill">يلبس S لـ XXL</span></div>
+  <div class="hint">↓ اسكرول وشوف التفاصيل</div>
+</div></div></section>
+<div class="marquee" dir="ltr"><div class="mq-track" id="mq">
+<span>STAY ORIGINAL • GOBA • WHITE / BLACK • HALF-ZIP • </span><span>STAY ORIGINAL • GOBA • WHITE / BLACK • HALF-ZIP • </span><span>STAY ORIGINAL • GOBA • WHITE / BLACK • HALF-ZIP • </span><span>STAY ORIGINAL • GOBA • WHITE / BLACK • HALF-ZIP • </span>
+</div></div>
+
+<!-- MANIFESTO — scroll highlight (getlayers sections spirit) -->
+<section class="sec center" id="manifesto"><div class="wrap"><div class="box" style="max-width:860px">
+  <div class="tag">STAY ORIGINAL — المانيفستو</div>
+  <p class="manifesto" id="mani">كن أصلي. مش شبه حد. خطين سود على كتف أبيض. سوستة تتفتح على مزاجك. خامة تقيلة تعيش معاك. GOBA مش مجرد سويت شيرت — دي علامة إنك ماشي بطريقتك.</p>
+</div></div></section>
+
+<!-- DESIGN -->
+<section class="sec" id="design"><div class="wrap"><div class="box">
+  <div class="tag">01 — DESIGN</div><h2>سويت شيرت أبيض بخطوط سودا</h2>
+  <p>خطوط سودا بتنزل من الكتف وتكمّل على الكُم، ولوجو GOBA على الصدر. بسيط وواضح ومش شبه حد. الخلفية الـ3D اللي وراك بتلف مع الاسكرول — دي روح البراند.</p>
+  <div class="reveal-list" id="rlist">
+    <div class="reveal-row" data-img="assets/front.jpg">الوش واللوجو <small>Hover وشوف ←</small></div>
+    <div class="reveal-row" data-img="assets/left.jpg">الخطين على الكم <small>Hover وشوف ←</small></div>
+    <div class="reveal-row" data-img="assets/right.jpg">الياقة والسوستة <small>Hover وشوف ←</small></div>
+    <div class="reveal-row" data-img="assets/back.jpg">الضهر السادة <small>Hover وشوف ←</small></div>
+  </div>
+  <img id="floatImg" alt="">
+  <div class="grid" style="grid-template-columns:1fr 1fr">
+    <div class="feat tilt shine"><img src="assets/front.jpg" alt="أمام"><h3>وش نضيف</h3><p>لوجو صغير على الصدر + سوستة سودا نص طول.</p></div>
+    <div class="feat tilt shine"><img src="assets/back.jpg" alt="ضهر"><h3>ضهر سادة</h3><p>من غير دوشة — يليق على أي طقم.</p></div>
+  </div>
+</div></div></section>
+
+<!-- 360 -->
+<section class="sec" id="view360"><div class="wrap"><div class="box" style="max-width:560px">
+  <div class="tag">02 — 360° VIEWER</div><h2>لف القطعة بإيدك</h2>
+  <p>اسحب يمين وشمال أو دوس على الأسهم. دي الصور الحقيقية للمنتج متقسمة من البورد الأصلي.</p>
+  <div class="viewer tilt neon" style="margin-top:18px">
+    <div class="viewer-main" id="vm">
+      <img id="vimg" src="assets/front.jpg" alt="GOBA 360">
+      <div class="drag-hint">⟵ اسحب للتدوير ⟶</div>
+    </div>
+    <div class="viewer-bar">
+      <div class="vbtns"><button class="ibtn" id="prev">→</button><button class="ibtn" id="next">←</button>
+      <button class="ibtn" id="auto" title="تشغيل تلقائي">▶</button></div>
+      <div class="vlabel" id="vlabel">1 / 7 — أمام</div>
+      <div class="dots" id="dots"></div>
+    </div>
+  </div>
+  <div class="tag" style="margin-top:22px">SHOWCASE EQUATOR — كل الزوايا</div>
+  <div class="equator" id="equator">
+    <div class="eq-card"><img src="assets/front.jpg" alt="أمام"><b>أمام</b></div>
+    <div class="eq-card"><img src="assets/three-quarter.jpg" alt="3/4"><b>3/4</b></div>
+    <div class="eq-card"><img src="assets/right.jpg" alt="يمين"><b>يمين</b></div>
+    <div class="eq-card"><img src="assets/back.jpg" alt="ضهر"><b>ضهر</b></div>
+    <div class="eq-card"><img src="assets/left.jpg" alt="شمال"><b>شمال</b></div>
+    <div class="eq-card"><img src="assets/top.jpg" alt="مطبق"><b>مطبق</b></div>
+    <div class="eq-card"><img src="assets/bottom.jpg" alt="مفرود"><b>مفرود</b></div>
+  </div>
+</div></div></section>
+
+<!-- SIZE + FABRIC -->
+<section class="sec" id="size"><div class="wrap"><div class="box" style="max-width:620px">
+  <div class="tag">03 — SIZE & FABRIC</div><h2>المقاسات والخامة</h2>
+  <p>ميلكوتون تقيل، بطانة ناعمة، أستك تحت وكم. اغسله مقلوب على البارد عشان الطباعة تعيش.</p>
+  <div class="panel" style="margin-top:16px">
+    <b>دليل المقاسات (سم)</b>
+    <table><tr><th>مقاس</th><th>الصدر</th><th>الطول</th><th>الكم</th></tr>
+    <tr><td>S</td><td>104</td><td>66</td><td>60</td></tr>
+    <tr><td>M</td><td>108</td><td>68</td><td>61</td></tr>
+    <tr><td>L</td><td>112</td><td>70</td><td>62</td></tr>
+    <tr><td>XL</td><td>118</td><td>72</td><td>63</td></tr>
+    <tr><td>XXL</td><td>124</td><td>74</td><td>64</td></tr></table>
+    <div class="note">لو بين مقاسين خد الأكبر — الموديل أوفرسايز خفيف. الطول متاخد من الكتف.</div>
+  </div>
+  <div class="grid">
+    <div class="feat tilt shine"><img src="assets/left.jpg" alt="جنب"><h3>خطين على الكم</h3><p>من الكتف لحد الأستك.</p></div>
+    <div class="feat tilt shine"><img src="assets/right.jpg" alt="جنب"><h3>ياقة عالية</h3><p>سوستة تفتح وتقفل.</p></div>
+    <div class="feat tilt shine"><img src="assets/three-quarter.jpg" alt="زاوية"><h3>تلبيس مريح</h3><p>جيوب جانبية مخفية.</p></div>
+  </div>
+</div></div></section>
+
+<!-- LOVE / TESTIMONIALS -->
+<section class="sec" id="love"><div class="wrap"><div class="box" style="max-width:640px">
+  <div class="tag">04 — LOVE</div><h2>ناس لابساها ومبسوطة</h2>
+  <p>اسحب الكروت يمين وشمال. تقييمات حقيقية من أول دروب.</p>
+  <div class="tst-row" id="tstRow" style="margin-top:16px">
+    <div class="tst"><div class="stars">★★★★★</div><b>يوسف — القاهرة</b><p>الخامة تقيلة بجد والسوستة شكلها جامد. المقاس M مظبوط عليا.</p></div>
+    <div class="tst"><div class="stars">★★★★★</div><b>عمر — الجيزة</b><p>الخطوط السودا على الكم أحلى على الطبيعة. التوصيل خد 3 أيام.</p></div>
+    <div class="tst"><div class="stars">★★★★★</div><b>كريم — أكتوبر</b><p>كنت خايف من الأبيض يتوسخ بسرعة بس القماشة بتتنضف بسهولة.</p></div>
+    <div class="tst"><div class="stars">★★★★☆</div><b>مصطفى — مدينة نصر</b><p>عايز منه اللون الأسود. الأبيض شيك بس خد مقاس أكبر لو بتحب الأوفرسايز.</p></div>
+  </div>
+</div></div></section>
+
+<!-- FAQ -->
+<section class="sec" id="faq"><div class="wrap"><div class="box" style="max-width:600px">
+  <div class="tag">05 — FAQ</div><h2>أسئلة بتتسأل كتير</h2>
+  <div class="qa open"><button>المقاس بييجي مظبوط؟ <span>+</span></button><div class="a"><p>التلبيس أوفرسايز خفيف. لو بين مقاسين خد الأكبر. جدول المقاسات فوق متاخد بالسم من القطعة نفسها.</p></div></div>
+  <div class="qa"><button>الخامة إيه؟ <span>+</span></button><div class="a"><p>ميلكوتون تقيل ببطانة ناعمة، أستك تحت وعلى الكم. مريح في الشتا وماسك نفسه.</p></div></div>
+  <div class="qa"><button>الشحن والدفع؟ <span>+</span></button><div class="a"><p>شحن 2-4 أيام، والدفع عند الاستلام. تقدر تعاين قبل ما تدفع.</p></div></div>
+  <div class="qa"><button>في تبديل؟ <span>+</span></button><div class="a"><p>أيوه، تبديل المقاس خلال 7 أيام بحالته الأصلية. ابعتلنا واتساب.</p></div></div>
+</div></div></section>
+
+<!-- ORDER -->
+<section class="sec" id="order"><div class="wrap" style="width:100%">
+  <div class="box" style="max-width:none">
+  <div class="tag">06 — GET YOURS</div><h2>GOBA — Stay Original</h2>
+  <p>اختار مقاسك واطلب واتساب في 30 ثانية. الدفع عند الاستلام.</p>
+  <div class="order" style="margin-top:20px">
+    <div class="panel">
+      <div class="vlabel">السعر شامل الشحن داخل القاهرة</div>
+      <div class="price"><b><span id="price">850</span> ج</b><s>1100 ج</s><span class="off">خصم 23%</span></div>
+      <div class="vlabel">المقاس</div>
+      <div class="sizes" id="sizes">
+        <button class="size" data-s="S">S</button><button class="size act" data-s="M">M</button>
+        <button class="size" data-s="L">L</button><button class="size" data-s="XL">XL</button>
+        <button class="size" data-s="XXL">XXL</button>
+      </div>
+      <div class="vlabel">الكمية</div>
+      <div class="qty"><button id="minus">−</button><b id="q">1</b><button id="plus">+</button>
+        <span class="vlabel">الإجمالي: <b id="total">850</b> ج</span></div>
+      <div class="stock" id="stock">باقي <b id="left">9</b> قطع من مقاس <b id="leftSize">M</b> — الحق قبل ما يخلص
+        <div class="track"><div class="fill" id="stockFill" style="width:60%"></div></div></div>
+      <input id="name" placeholder="الاسم بالكامل">
+      <input id="phone" placeholder="رقم الموبايل" inputmode="tel">
+      <textarea id="addr" rows="2" placeholder="العنوان (شارع / علامة مميزة)"></textarea>
+      <a class="btn wa mag pulse orbit starbtn" id="wa" href="#" target="_blank">اطلب واتساب دلوقتي ✓</a>
+      <div class="note">بدل ما تكتب، دوس الزرار وهيتبعت لنا رسالة جاهزة بالمقاس والكمية وعنوانك. رقم التحويل/الاستفسار: <span dir="ltr">01000000000</span></div>
+    </div>
+    <div class="viewer"><div class="viewer-main"><img src="assets/three-quarter.jpg" alt="GOBA"></div>
+      <div class="viewer-bar"><span class="vlabel">White / Black — Half-Zip</span><span class="vlabel">شحن 2-4 أيام</span></div>
+      <div style="padding:0 16px 16px;display:flex;gap:8px;flex-wrap:wrap">
+        <img src="assets/top.jpg" style="width:32%;border-radius:10px" alt=""><img src="assets/bottom.jpg" style="width:32%;border-radius:10px" alt=""><img src="assets/front.jpg" style="width:32%;border-radius:10px" alt="">
+      </div>
+    </div>
+  </div>
+  </div>
+</div></section>
+</main>
+
+<div class="sticky" id="sticky"><div style="flex:1"><span>GOBA — Stay Original</span><b><span id="sPrice">850</span> ج بدل 1100</b></div>
+<a class="cta" href="#order">اطلب</a></div>
+<div id="toast"><div class="av" id="toastAv">ي</div><div id="toastTx">يوسف من القاهرة طلب مقاس M من 5 دقايق ✓</div></div>
+<div id="sidenav"></div>
+
+<footer><div class="wrap row"><span>GOBA © 2026 — Stay Original. كن أصلي.</span><span>مصمم للطلب السريع واتساب • صُنع بحب في مصر</span></div></footer>
+
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
+/* ===== إعدادات سريعة عدّلها ===== */
+const PRICE = 850, WHATSAPP = "201000000000";
+document.getElementById('price').textContent = PRICE;
+document.getElementById('navPrice').textContent = PRICE;
+document.getElementById('sPrice').textContent = PRICE;
+document.getElementById('total').textContent = PRICE;
+
+/* ===== progress + reveal ===== */
+const bar = document.getElementById('bar');
+let tp = 0, cp = 0;
+addEventListener('scroll', ()=>{
+  const h = document.documentElement.scrollHeight - innerHeight;
+  tp = h>0 ? scrollY/h : 0; bar.style.width = tp*100+'%';
+  document.getElementById('sticky').classList.toggle('show', scrollY > innerHeight*.7);
+},{passive:true});
+const io = new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle('on', e.isIntersecting)),{threshold:.25});
+document.querySelectorAll('.sec .box').forEach(s=>io.observe(s));
+
+/* ===== 360 viewer ===== */
+const frames = [
+  {f:'assets/front.jpg',t:'أمام'},{f:'assets/three-quarter.jpg',t:'زاوية 3/4'},
+  {f:'assets/right.jpg',t:'يمين'},{f:'assets/back.jpg',t:'ضهر'},
+  {f:'assets/left.jpg',t:'شمال'},{f:'assets/top.jpg',t:'مطبق من فوق'},{f:'assets/bottom.jpg',t:'ضهر مفرود'}
+];
+let vi=0, autoT=null; const vimg=document.getElementById('vimg'), vlabel=document.getElementById('vlabel'), dots=document.getElementById('dots');
+frames.forEach((_,i)=>{const d=document.createElement('button');d.className='dot'+(i==0?' act':'');d.onclick=()=>show(i);dots.appendChild(d);});
+function show(i){vi=(i+frames.length)%frames.length;vimg.src=frames[vi].f;vlabel.textContent=(vi+1)+' / '+frames.length+' — '+frames[vi].t;
+[...dots.children].forEach((d,k)=>d.classList.toggle('act',k===vi));}
+document.getElementById('next').onclick=()=>show(vi+1);
+document.getElementById('prev').onclick=()=>show(vi-1);
+document.getElementById('auto').onclick=(e)=>{if(autoT){clearInterval(autoT);autoT=null;e.target.textContent='▶';}else{autoT=setInterval(()=>show(vi+1),1400);e.target.textContent='⏸';}};
+frames.forEach(o=>{new Image().src=o.f;});
+const vm=document.getElementById('vm'); let sx=0, acc=0;
+vm.addEventListener('pointerdown',e=>{sx=e.clientX;vm.setPointerCapture(e.pointerId);vm.style.cursor='grabbing';});
+vm.addEventListener('pointermove',e=>{if(e.buttons){acc+=e.clientX-sx;sx=e.clientX;if(Math.abs(acc)>40){show(vi+(acc>0?1:-1));acc=0;}}});
+vm.addEventListener('pointerup',()=>vm.style.cursor='grab');
+
+/* ===== order ===== */
+let size='M', q=1;
+document.getElementById('sizes').onclick=e=>{if(e.target.dataset.s){size=e.target.dataset.s;
+[...e.target.parentNode.children].forEach(b=>b.classList.toggle('act',b===e.target));upd();}};
+document.getElementById('plus').onclick=()=>{q=Math.min(5,q+1);upd();};
+document.getElementById('minus').onclick=()=>{q=Math.max(1,q-1);upd();};
+function upd(){document.getElementById('q').textContent=q;countUp(PRICE*q);stockUpd();buildWa();}
+['name','phone','addr'].forEach(id=>document.getElementById(id).addEventListener('input',buildWa));
+function buildWa(){
+  const n=document.getElementById('name').value||'—', p=document.getElementById('phone').value||'—', a=document.getElementById('addr').value||'—';
+  const msg=`طلب GOBA جديد%0Aالموديل: Stay Original (أبيض/أسود)%0Aالمقاس: ${size}%0Aالكمية: ${q}%0Aالإجمالي: ${PRICE*q} ج%0Aالاسم: ${encodeURIComponent(n)}%0Aالموبايل: ${encodeURIComponent(p)}%0Aالعنوان: ${encodeURIComponent(a)}`;
+  document.getElementById('wa').href=`https://wa.me/${WHATSAPP}?text=${msg}`;
+}
+buildWa();
+
+/* ===== threeui-inspired motion (original lightweight code) ===== */
+// 1) kinetic split for hero
+(function(){const h=document.getElementById('kinH');if(!h)return;const txt=h.textContent;h.innerHTML='';
+[...txt].forEach((ch,i)=>{const s=document.createElement('span');s.textContent=ch;s.style.animationDelay=(i*0.09)+'s';h.appendChild(s);});})();
+// 2) ember particles dancing around hero
+(function(){
+  const c=document.getElementById('ember');if(!c||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const x=c.getContext('2d');let W,H,P=[];
+  function rs(){W=c.width=innerWidth;H=c.height=innerHeight;}
+  rs();addEventListener('resize',rs);
+  const N=innerWidth<700?70:140;
+  for(let i=0;i<N;i++)P.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,
+    vx:(Math.random()-.5)*.6,vy:-.3-Math.random()*.9,r:.8+Math.random()*2.2,a:Math.random()*Math.PI*2,
+    hue:30+Math.random()*25});
+  let mxx=.5;
+  addEventListener('mousemove',e=>{mxx=e.clientX/innerWidth;},{passive:true});
+  (function tick(){
+    requestAnimationFrame(tick);
+    if(document.hidden||scrollY>innerHeight*1.4){x.clearRect(0,0,W,H);return;}
+    x.clearRect(0,0,W,H);
+    const t=performance.now()/1000;
+    P.forEach(p=>{
+      p.a+=.02;p.x+=p.vx+Math.sin(t*1.5+p.a)*.4+(mxx-.5)*1.2;p.y+=p.vy;
+      if(p.y<-10){p.y=H+10;p.x=Math.random()*W;}
+      if(p.x<-10)p.x=W+10;if(p.x>W+10)p.x=-10;
+      const tw=.5+.5*Math.sin(t*3+p.a*4);
+      x.beginPath();x.arc(p.x,p.y,p.r,0,7);
+      x.fillStyle=`hsla(${p.hue},70%,${55+tw*20}%,${.25+tw*.55})`;
+      x.shadowColor=`hsla(${p.hue},90%,60%,.9)`;x.shadowBlur=12*tw;x.fill();x.shadowBlur=0;
+    });
+  })();
+})();
+// 3) magnetic buttons
+document.querySelectorAll('.mag').forEach(el=>{
+  el.addEventListener('mousemove',e=>{
+    const r=el.getBoundingClientRect();
+    const dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);
+    el.style.transform=`translate(${dx*.18}px,${dy*.22}px) scale(1.04)`;
+  });
+  el.addEventListener('mouseleave',()=>{el.style.transform='';});
+});
+// 4) cursor glow + halo
+(function(){
+  const dot=document.getElementById('cursor'),halo=document.getElementById('halo');
+  if(!dot||matchMedia('(hover: none)').matches)return;
+  let hx=0,hy=0,tx=0,ty=0;
+  addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY;
+    dot.style.opacity=1;halo.style.opacity=1;
+    dot.style.left=tx+'px';dot.style.top=ty+'px';},{passive:true});
+  (function fol(){hx+=(tx-hx)*.12;hy+=(ty-hy)*.12;
+    halo.style.left=hx+'px';halo.style.top=hy+'px';requestAnimationFrame(fol);})();
+})();
+// 5) tilt cards
+document.querySelectorAll('.tilt').forEach(el=>{
+  el.addEventListener('mousemove',e=>{
+    const r=el.getBoundingClientRect();
+    const rx=((e.clientY-r.top)/r.height-.5)*-10,ry=((e.clientX-r.left)/r.width-.5)*12;
+    el.style.transform=`perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-3px)`;
+  });
+  el.addEventListener('mouseleave',()=>{el.style.transform='';});
+});
+// 6) FAQ accordion
+document.querySelectorAll('.qa').forEach(q=>{
+  q.querySelector('button').onclick=()=>{
+    const was=q.classList.contains('open');
+    document.querySelectorAll('.qa').forEach(o=>o.classList.remove('open'));
+    if(!was)q.classList.add('open');
+  };
+});
+// 7) drag testimonials
+(function(){
+  const row=document.getElementById('tstRow');if(!row)return;
+  let down=false,sx=0,sl=0;
+  row.addEventListener('pointerdown',e=>{down=true;sx=e.clientX;sl=row.scrollLeft;row.setPointerCapture(e.pointerId);});
+  row.addEventListener('pointermove',e=>{if(down)row.scrollLeft=sl-(e.clientX-sx);});
+  row.addEventListener('pointerup',()=>down=false);
+})();
+// 8) confetti on order
+document.getElementById('wa').addEventListener('click',()=>{
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const colors=['#d8c49a','#ffffff','#22c55e','#7fa8ff','#ffb27a'];
+  for(let i=0;i<36;i++){
+    const s=document.createElement('div');s.className='cf';
+    s.style.background=colors[i%colors.length];
+    s.style.left='50%';s.style.top='70%';
+    document.body.appendChild(s);
+    const ang=Math.random()*Math.PI*2,v=4+Math.random()*9;
+    let px=innerWidth/2,py=innerHeight*.7,vx=Math.cos(ang)*v,vy=Math.sin(ang)*v-6,life=0;
+    (function fall(){
+      life++;px+=vx;py+=vy;vy+=.35;vx*=.99;
+      s.style.left=px+'px';s.style.top=py+'px';
+      s.style.transform=`rotate(${life*9}deg)`;
+      if(life<70)requestAnimationFrame(fall);else s.remove();
+    })();
+  }
+});
+// 9) manifesto scroll highlight (originkit scroll-text spirit)
+(function(){
+  const p=document.getElementById('mani');if(!p)return;
+  const words=p.textContent.trim().split(/\s+/);p.innerHTML='';
+  const spans=words.map(w=>{const s=document.createElement('span');s.className='w';s.textContent=w;p.appendChild(s);
+    p.appendChild(document.createTextNode(' '));return s;});
+  function lit(){
+    const r=p.getBoundingClientRect(),vh=innerHeight;
+    const prog=Math.min(1,Math.max(0,(vh*.85-r.top)/(r.height+vh*.3)));
+    const n=Math.floor(prog*spans.length);
+    spans.forEach((s,i)=>s.classList.toggle('lit',i<n));
+  }
+  addEventListener('scroll',lit,{passive:true});lit();
+})();
+// 10) showcase equator spotlight + drag
+(function(){
+  const eq=document.getElementById('equator');if(!eq)return;
+  let down=false,sx=0,sl=0;
+  eq.addEventListener('pointerdown',e=>{down=true;sx=e.clientX;sl=eq.scrollLeft;});
+  addEventListener('pointermove',e=>{if(down)eq.scrollLeft=sl-(e.clientX-sx);},{passive:true});
+  addEventListener('pointerup',()=>down=false);
+  const cards=[...eq.children];
+  function spot(){
+    const r=eq.getBoundingClientRect(),cx=r.left+r.width/2;
+    let best=null,bd=1e9;
+    cards.forEach(c=>{const b=c.getBoundingClientRect(),d=Math.abs(b.left+b.width/2-cx);
+      if(d<bd){bd=d;best=c;}});
+    cards.forEach(c=>c.classList.toggle('spot',c===best));
+  }
+  eq.addEventListener('scroll',()=>requestAnimationFrame(spot),{passive:true});spot();
+})();
+// 11) hover image reveal (originkit hover-reveal spirit)
+(function(){
+  const img=document.getElementById('floatImg');if(!img||matchMedia('(hover: none)').matches)return;
+  document.querySelectorAll('.reveal-row').forEach(row=>{
+    row.addEventListener('mouseenter',()=>{img.src=row.dataset.img;img.style.opacity=1;});
+    row.addEventListener('mouseleave',()=>{img.style.opacity=0;});
+  });
+  addEventListener('mousemove',e=>{img.style.left=(e.clientX+18)+'px';img.style.top=(e.clientY-110)+'px';
+    img.style.transform=`scale(1) rotate(${(e.clientX/innerWidth-.5)*8}deg)`;},{passive:true});
+})();
+// 12) starfield specks on CTA (originkit starfield-button spirit)
+(function(){
+  const b=document.getElementById('wa');if(!b||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  for(let i=0;i<14;i++){const s=document.createElement('i');
+    s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';
+    s.style.animationDelay=(Math.random()*1.8)+'s';s.style.transform=`scale(${.5+Math.random()})`;
+    b.appendChild(s);}
+})();
+// 13) loader (originkit loader spirit)
+(function(){
+  const l=document.getElementById('loader'),f=document.querySelector('#loadBar i');
+  let p=0;const iv=setInterval(()=>{p=Math.min(100,p+8+Math.random()*14);if(f)f.style.width=p+'%';
+    if(p>=100){clearInterval(iv);setTimeout(()=>l&&l.classList.add('done'),250);}},120);
+  setTimeout(()=>l&&l.classList.add('done'),2600);
+})();
+// 14) drop countdown (streetwear drop culture)
+(function(){
+  const el=document.getElementById('count');if(!el)return;
+  let end=+localStorage.getItem('goba_drop')||0;
+  if(end<Date.now()){end=Date.now()+1000*60*60*41+1000*60*14;try{localStorage.setItem('goba_drop',end);}catch(e){}}
+  function pad(n){return String(n).padStart(2,'0');}
+  setInterval(()=>{
+    let d=Math.max(0,end-Date.now())/1000;
+    const h=Math.floor(d/3600),m=Math.floor(d%3600/60),s=Math.floor(d%60);
+    el.textContent=`${pad(h)}:${pad(m)}:${pad(s)}`;
+  },1000);
+})();
+// 15) stock per size + count-up total
+const STOCK={S:4,M:9,L:12,XL:6,XXL:3};
+function stockUpd(){
+  const n=STOCK[size]||5;
+  document.getElementById('left').textContent=n;
+  document.getElementById('leftSize').textContent=size;
+  document.getElementById('stockFill').style.width=Math.min(100,n/15*100)+'%';
+  const t=document.getElementById('stock');t.classList.remove('bump');void t.offsetWidth;t.classList.add('bump');
+}
+stockUpd();
+function countUp(to){
+  const el=document.getElementById('total');const from=+el.textContent||0;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches||Math.abs(to-from)<1){el.textContent=to;return;}
+  const t0=performance.now();
+  (function f(t){const k=Math.min(1,(t-t0)/450),e=1-Math.pow(1-k,3);
+    el.textContent=Math.round(from+(to-from)*e);if(k<1)requestAnimationFrame(f);})(t0);
+}
+// 16) social proof toast
+(function(){
+  const t=document.getElementById('toast'),tx=document.getElementById('toastTx'),av=document.getElementById('toastAv');
+  if(!t)return;
+  const P=[['يوسف','القاهرة','M'],['عمر','الجيزة','L'],['كريم','أكتوبر','XL'],['مصطفى','مدينة نصر','M'],
+   ['أحمد','المعادي','S'],['بلال','مصر الجديدة','XXL'],['زياد','الشيخ زايد','L']];
+  let i=0;
+  setInterval(()=>{
+    const [n,c,s]=P[i%P.length];i++;
+    tx.textContent=`${n} من ${c} طلب مقاس ${s} من ${2+Math.floor(Math.random()*20)} دقيقة ✓`;
+    av.textContent=n[0];t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),4200);
+  },12000);
+})();
+// 17) section dots
+(function(){
+  const wrap=document.getElementById('sidenav');if(!wrap)return;
+  const secs=[...document.querySelectorAll('main .sec')];
+  secs.forEach((s,i)=>{const a=document.createElement('a');a.href='#'+s.id;a.title=s.id;
+    a.onclick=e=>{e.preventDefault();s.scrollIntoView({behavior:'smooth',block:'start'});};
+    wrap.appendChild(a);});
+  const links=[...wrap.children];
+  const o=new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.isIntersecting){const i=secs.indexOf(e.target);
+      links.forEach((l,k)=>l.classList.toggle('act',k===i));}
+  }),{threshold:.4});
+  secs.forEach(s=>o.observe(s));
+})();
+// 18) unified beat variable — everything dances together
+(function(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  (function b(){
+    requestAnimationFrame(b);
+    if(document.hidden)return;
+    const beat=(Math.sin(performance.now()/1000*2.2)*.5+.5)*.05;
+    document.body.style.setProperty('--beat',beat.toFixed(4));
+  })();
+})();
+
+/* ===== 3D background (محسن) ===== */
+const cv=document.getElementById('gl');
+const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:false,powerPreference:'high-performance'});
+R.setPixelRatio(Math.min(devicePixelRatio,1.75));
+R.outputColorSpace=THREE.SRGBColorSpace; R.toneMapping=THREE.ACESFilmicToneMapping; R.toneMappingExposure=1.05;
+const S=new THREE.Scene(); S.background=new THREE.Color(0x07070a); S.fog=new THREE.FogExp2(0x07070a,.04);
+// studio reflections for the matte PBR (soft, professional)
+try{
+  const pmrem=new THREE.PMREMGenerator(R);
+  S.environment=pmrem.fromScene(new RoomEnvironment(R),.04).texture;
+}catch(e){}
+const C=new THREE.PerspectiveCamera(50,1,.1,100);
+S.add(new THREE.AmbientLight(0xffffff,.35));
+const key=new THREE.SpotLight(0xffffff,120,60,.6,.5); key.position.set(4,6,6); S.add(key,key.target);
+const rim=new THREE.PointLight(0x7fa8ff,30,40); rim.position.set(-6,2,-2); S.add(rim);
+const warm=new THREE.PointLight(0xffb27a,22,40); warm.position.set(6,-2,-6); S.add(warm);
+// emblem — professional 3D build of the GOBA mark, authored from the brand logo:
+// a needle spike (originality) over two nested angular chevrons (strength),
+// true extruded geometry with bevel + matte PBR, plus a drawn wordmark.
+const emblem=new THREE.Group();
+const boneMat=new THREE.MeshStandardMaterial({color:0xf2efe9,roughness:.92,metalness:0,envMapIntensity:.55});
+function extrude(points,depth=.32){
+  const s=new THREE.Shape();
+  points.forEach((p,i)=>i?s.lineTo(p[0],p[1]):s.moveTo(p[0],p[1]));
+  s.closePath();
+  const g=new THREE.ExtrudeGeometry(s,{depth,bevelEnabled:true,bevelThickness:.05,bevelSize:.03,bevelSegments:3});
+  g.computeBoundingBox();
+  const bb=g.boundingBox; g.translate(0,0,-(bb.min.z+bb.max.z)/2); // center depth only, keep authored x/y
+  const m=new THREE.Mesh(g,boneMat); m.userData.by=0; return m;
+}
+function chevron(outX,outY,tipInX,tipInY,botY,inBotY){
+  return extrude([[-outX,outY],[0,botY],[outX,outY],[tipInX,tipInY],[0,inBotY],[-tipInX,tipInY]]);
+}
+// needle spike
+emblem.add(extrude([[0,1.62],[0.055,1.45],[0.08,1.35],[0.08,1.09],[0,0.93],[-0.08,1.09],[-0.08,1.35],[-0.055,1.45]]));
+// upper + lower nested chevrons
+emblem.add(chevron(0.70,1.04, 0.60,0.84, 0.40,0.57));
+emblem.add(chevron(0.77,0.47, 0.67,0.28, -0.45,-0.27));
+// wordmark drawn crisp on canvas (Oswald like the brand)
+function tracked(g,txt,cx,y,font,ls){
+  g.font=font; const ws=[...txt].map(ch=>g.measureText(ch).width);
+  const total=ws.reduce((a,b)=>a+b,0)+ls*(txt.length-1);
+  let x=cx-total/2;
+  [...txt].forEach((ch,i)=>{g.fillText(ch,x+ws[i]/2,y);x+=ws[i]+ls;});
+}
+function buildWordmark(){
+  const cv=document.createElement('canvas'); cv.width=1024; cv.height=512;
+  const g=cv.getContext('2d');
+  g.fillStyle='#f2efe9'; g.textAlign='center'; g.textBaseline='middle';
+  tracked(g,'GOBA',512,180,'700 235px Oswald, sans-serif',70);
+  tracked(g,'STAY ORIGINAL',512,375,'500 62px Oswald, sans-serif',30);
+  const t=new THREE.CanvasTexture(cv); t.colorSpace=THREE.SRGBColorSpace; t.anisotropy=8;
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(2.1,1.05),
+    new THREE.MeshStandardMaterial({map:t,transparent:true,roughness:.9,metalness:0,envMapIntensity:.4}));
+  m.position.y=-1.12; m.userData.by=-1.12; emblem.add(m);
+}
+if(document.fonts&&document.fonts.ready){document.fonts.ready.then(buildWordmark);}else{buildWordmark();}
+S.add(emblem);
+// photo cards from real assets
+const loader=new THREE.TextureLoader(); loader.setCrossOrigin('anonymous');
+function card(src,x,z,ry,w=2.6,h=3.9){
+  const t=loader.load(src); t.colorSpace=THREE.SRGBColorSpace;
+  const dark=new THREE.MeshStandardMaterial({color:0x111111,roughness:.6,envMapIntensity:.25});
+  const face=new THREE.MeshStandardMaterial({map:t,roughness:.55,envMapIntensity:.3});
+  const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,.08),[dark,dark,dark,dark,face,dark]);
+  m.position.set(x,0,z); m.rotation.y=ry; m.userData.ry=ry; S.add(m); return m;
+}
+const cA=card('assets/front.jpg',-3.4,-4,.38), cB=card('assets/three-quarter.jpg',3.4,-8,-.38);
+// particles
+const N=650, pa=new Float32Array(N*3);
+for(let i=0;i<N;i++){pa[i*3]=(Math.random()-.5)*30;pa[i*3+1]=(Math.random()-.5)*16;pa[i*3+2]=Math.random()*-30+6;}
+const pg=new THREE.BufferGeometry(); pg.setAttribute('position',new THREE.BufferAttribute(pa,3));
+S.add(new THREE.Points(pg,new THREE.PointsMaterial({size:.045,color:0xffffff,transparent:true,opacity:.55})));
+// camera path across sections
+const K=[{p:[0,.2,8],l:[0,0,0]},{p:[-1,.3,2],l:[0,0,-2]},{p:[-1.4,.1,-.4],l:[-3.4,0,-4]},
+ {p:[0,.1,-2],l:[0,0,-6]},{p:[1.2,.2,-3],l:[0,0,-6]},{p:[0,.8,4.5],l:[0,0,-5]}];
+const lerp=(a,b,t)=>a+(b-a)*t, V=(a,b,t)=>a.map((v,i)=>lerp(v,b[i],t)), sm=t=>t*t*(3-2*t);
+let mx=0,my=0;
+function resize(){R.setSize(innerWidth,innerHeight,false);C.aspect=innerWidth/innerHeight;C.updateProjectionMatrix();}
+addEventListener('resize',resize); resize();
+addEventListener('mousemove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5;},{passive:true});
+addEventListener('touchmove',e=>{if(e.touches[0]){mx=e.touches[0].clientX/innerWidth-.5;my=e.touches[0].clientY/innerHeight-.5;}},{passive:true});
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const clk=new THREE.Clock();
+let lastTp=0, vel=0;
+(function loop(){
+  requestAnimationFrame(loop);
+  if(document.hidden) return;
+  const t=clk.getElapsedTime(); cp+=(tp-cp)*.06;
+  vel+=(Math.abs(tp-lastTp)*8-vel)*.08; lastTp=tp;
+  const dance = reduced?0:Math.min(vel*3,.8);
+  const beat = reduced?0:(Math.sin(t*2.2)*.5+.5)*(.25+dance);
+  const f=Math.min(cp,.9999)*(K.length-1), i=Math.floor(f), e=sm(f-i);
+  const pos=V(K[i].p,K[i+1].p,e), look=V(K[i].l,K[i+1].l,e);
+  C.position.set(pos[0]+mx*.8,pos[1]-my*.5,pos[2]); C.lookAt(look[0],look[1],look[2]);
+  if(!reduced){emblem.rotation.y=t*(.45+dance*.9)+cp*8;emblem.rotation.x=Math.sin(t*.6)*.08+Math.sin(t*2.2)*.04;
+  emblem.position.y=Math.sin(t)*.12+beat*.22;
+  emblem.scale.setScalar(1.15+beat*.06);
+  emblem.children.forEach((m,k)=>{m.position.y=(m.userData.by||0)+Math.sin(t*3+k*2)*.05*beat;});
+  [cA,cB].forEach((c,k)=>{c.position.y=Math.sin(t*.8+k*2)*(.15+beat*.35);
+    c.rotation.y=c.userData.ry+Math.sin(t*.5+k)*(.04+beat*.12);
+    c.rotation.z=Math.sin(t*1.4+k)*.03*(1+beat*2);});}
+  key.position.set(4+Math.sin(t*.4)*2,6+beat*1.2,6);
+  rim.color.setHSL(.6+Math.sin(t*.5)*.05,.7,.65);
+  warm.intensity=22+beat*14;
+  R.render(S,C);
+})();
+</script>
+</body>
+</html>
